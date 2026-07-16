@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Centinily</title>
+  <meta name="description" content="Roblox systems, built for the people who own them." />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ============ THE SITE (revealed by the split) ============ -->
+  <main class="site" id="site">
+
+    <!-- Pedestal 1 — Mount Everest Climbing Roleplay.
+         "I can take over what already exists and make it better —
+          at scale, without breaking it." -->
+    <section class="pedestal" id="pedestal-1" data-pedestal>
+      <article class="piece" data-arrive>
+        <div class="vitrine" data-vitrine>
+          <!-- Poster + lazy silent loop. Only the in-view pedestal plays.
+               data-src is wired but no file ships yet — placeholder shows. -->
+          <video class="loop" muted loop playsinline preload="none"
+                 data-src="assets/video/everest-loop.mp4"
+                 poster="assets/video/everest-poster.jpg"></video>
+          <div class="vitrine__placeholder">the system, running</div>
+          <div class="rake" aria-hidden="true"></div>
+        </div>
+        <div class="piece__meta">
+          <h2 class="piece__title">Mount Everest Climbing Roleplay</h2>
+          <p class="piece__line">Full rewrite, live &middot; with one other developer</p>
+          <p class="piece__num">2020&ndash;2022</p>
+        </div>
+      </article>
+    </section>
+
+  </main>
+
+  <!-- ============ THE INTRO (§2.2 / §2.4) ============ -->
+  <div class="intro" id="intro" aria-hidden="true">
+    <div class="intro__panel intro__panel--top" id="panelTop">
+      <div class="intro__wordmark" id="wordmarkWrap"><!-- SVG injected --></div>
+      <div class="glint" id="glint" aria-hidden="true"></div>
+    </div>
+    <div class="intro__panel intro__panel--bottom" id="panelBottom"></div>
+    <div class="intro__flash" id="flash" aria-hidden="true"></div>
+  </div>
+
+  <!-- ============ THE GATE (§2.1) ============ -->
+  <div class="gate" id="gate" role="button" tabindex="0" aria-label="Enter">
+    <div class="gate__line"></div>
+    <div class="gate__hint">click anywhere</div>
+  </div>
+
+  <!-- material overlays: film grain + vignette (§9) -->
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="grain" id="grain" aria-hidden="true"></div>
+
+  <script src="js/vendor/gsap.min.js"></script>
+  <script src="js/vendor/CustomEase.min.js"></script>
+  <script src="js/vendor/MotionPathPlugin.min.js"></script>
+  <script src="js/ease.js"></script>
+  <script src="js/grain.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/pedestal.js"></script>
+  <script src="js/intro.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

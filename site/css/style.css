@@ -1,0 +1,331 @@
+/* ============================================================
+   CENTINILY
+   A room with four things in it and one light.
+   ============================================================ */
+
+/* ---- Type ---------------------------------------------------
+   A thin, high-contrast serif with a voice. Not Inter.
+   System Didone/high-contrast stack first so the site has the
+   right voice even with no network; a webfont can be layered
+   on later without touching anything else.                     */
+:root {
+  --serif: "Didot", "Bodoni MT", "Bodoni 72", "Playfair Display",
+           "Hoefler Text", "Times New Roman", Georgia, serif;
+
+  /* ---- Palette (§9) ----
+     Black is never #000. Brass is the only warm thing.
+     Green is so dark it's nearly black, adjacent to Rolex, not it. */
+  --black:        #08080a;   /* base, before grain + vignette */
+  --ink:          #0c0c0f;
+  --brass:        #c2a15b;   /* a hair of saturation, no more */
+  --brass-hot:    #f4e6c4;   /* the hot core of a highlight only */
+  --green:        #0b1a13;   /* near-black; NOT #006039 */
+  --line:         rgba(194, 161, 91, 0.28);  /* hairline brass */
+  --text:         #d8d2c4;   /* warm off-white for body */
+  --text-dim:     rgba(216, 210, 196, 0.42);
+
+  /* ---- Motion (§4) ----
+     Two eases only. Vault doors move heavy; arrivals settle expo.
+     Zero springs, zero bounce, overshoot never > 0.             */
+  --ease-vault: cubic-bezier(0.7, 0, 0.2, 1);
+  --ease-arrive: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--serif);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Lock scroll while the intro owns the screen. */
+body.intro-open { overflow: hidden; height: 100vh; }
+
+/* ---- The black is a material, not a default (§9) ------------
+   A barely-there vignette + film grain over everything, so the
+   dark reads as intentional. Both are non-interactive and sit
+   above the page but below the light events.                   */
+.grain, .vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+}
+.vignette {
+  background: radial-gradient(120% 120% at 50% 42%,
+              rgba(0,0,0,0) 46%, rgba(0,0,0,0.55) 100%);
+}
+.grain {
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  /* generated as a data-URI at runtime by js/grain.js; falls back to nothing */
+}
+
+/* ============================================================
+   THE GATE (§2.1)
+   Pure black. One hairline, blinking slowly. click anywhere.
+   No logo, no loader, no percentage. The wait is the tension.
+   ============================================================ */
+.gate {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--black);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 600ms var(--ease-vault);
+}
+.gate__line {
+  width: 1px;
+  height: 46px;
+  background: var(--brass);
+  opacity: 0.5;
+  animation: gate-blink 2600ms var(--ease-vault) infinite;
+}
+.gate__hint {
+  margin-top: 30px;
+  font-size: 12px;
+  letter-spacing: 0.42em;
+  text-transform: lowercase;
+  color: var(--text-dim);
+  font-family: var(--serif);
+  font-style: italic;
+}
+@keyframes gate-blink {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 0.06; }
+}
+.gate.is-dismissed { opacity: 0; pointer-events: none; }
+
+/* ============================================================
+   THE INTRO — wordmark, split (§2.2 / §2.4)
+   ============================================================ */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+.intro.is-done { display: none; }
+
+/* Two black panels form the field. They meet at the split line
+   (the y's horizontal exit). On the click they part — up/down —
+   like a vault door, revealing the first pedestal. */
+.intro__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--black);
+  will-change: transform;
+}
+.intro__panel--top {
+  top: 0;
+  height: 50vh;          /* set precisely from geometry in JS */
+  overflow: hidden;
+}
+.intro__panel--bottom {
+  bottom: 0;
+  height: 50vh;          /* set precisely from geometry in JS */
+}
+
+/* The wordmark lives in the top panel and rides up with it. */
+.intro__wordmark {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1100px, 84vw);
+  /* vertical placement so the y-exit endpoint sits on the split
+     line is set in JS via `bottom` */
+}
+.wordmark-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.wordmark-svg path {
+  fill: none;
+  stroke: var(--brass);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* draw state (dash) is initialised in JS */
+}
+
+/* The glint: a single travelling point of light on the pen tip.
+   A point, not a glow on the line. The only light until the click. */
+.glint {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border-radius: 50%;
+  opacity: 0;
+  will-change: transform, opacity;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(circle,
+      rgba(255,252,244,1) 0%,
+      rgba(244,230,196,0.9) 16%,
+      rgba(194,161,91,0.35) 42%,
+      rgba(194,161,91,0) 70%);
+}
+
+/* The one-frame white blowout at the crossing point (§2.3). */
+.intro__flash {
+  position: absolute;
+  top: 0; left: 0;
+  width: 380px;
+  height: 380px;
+  margin: -190px 0 0 -190px;
+  border-radius: 50%;
+  opacity: 0;
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+  background:
+    radial-gradient(circle,
+      rgba(255,255,255,1) 0%,
+      rgba(255,253,247,0.9) 12%,
+      rgba(244,230,196,0.4) 34%,
+      rgba(244,230,196,0) 66%);
+}
+
+/* ============================================================
+   THE SITE — pedestals (§6)
+   One piece per screen. Absurd empty space. Nothing eager.
+   ============================================================ */
+.site {
+  position: relative;
+  z-index: 1;
+}
+
+.pedestal {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 12vh 6vw;
+}
+
+.piece {
+  position: relative;
+  width: min(880px, 86vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* The vitrine: where the system runs. The loop is the object —
+   silent, chromeless, no controls. Here a dark placeholder until
+   real footage is dropped in. */
+.vitrine {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background:
+    radial-gradient(140% 120% at 50% 30%, #14140f 0%, #0a0a0b 70%);
+  border: 1px solid rgba(194,161,91,0.10);
+  overflow: hidden;
+}
+.vitrine video,
+.vitrine img.poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* Placeholder mark inside an empty vitrine (removed once footage exists). */
+.vitrine__placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(216,210,196,0.14);
+  font-style: italic;
+  letter-spacing: 0.3em;
+  font-size: 13px;
+  text-transform: lowercase;
+}
+
+/* The rake: a specular streak that travels across the piece on
+   arrival. Baked, screen-blended, transform-animated only.
+   Nothing glows at rest — it starts fully off and to the left. */
+.rake {
+  position: absolute;
+  top: -12%;
+  left: 0;
+  width: 42%;
+  height: 124%;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+  transform: translateX(-140%) skewX(-12deg);
+  background:
+    linear-gradient(105deg,
+      rgba(244,230,196,0) 0%,
+      rgba(244,230,196,0.10) 38%,
+      rgba(255,252,244,0.85) 50%,
+      rgba(244,230,196,0.10) 62%,
+      rgba(244,230,196,0) 100%);
+}
+
+/* Provenance — a hallmark, not a boast (§6). Small, stated once. */
+.piece__meta {
+  margin-top: 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.piece__title {
+  font-size: clamp(22px, 3.4vw, 38px);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  margin: 0;
+  color: var(--text);
+}
+.piece__line {
+  font-size: 13px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-style: normal;
+}
+.piece__num {
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: rgba(194,161,91,0.55);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Pieces arrive already still, or settle in without spring. */
+.piece[data-arrive] {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+/* ---- reduced motion (§2.5, §11): show, don't perform -------- */
+@media (prefers-reduced-motion: reduce) {
+  .gate__line { animation: none; opacity: 0.4; }
+  .rake { display: none; }
+  .piece[data-arrive] { opacity: 1; transform: none; }
+}
