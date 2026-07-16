@@ -39,7 +39,26 @@
   <!-- ============ THE INTRO (§2.2 / §2.4) ============ -->
   <div class="intro" id="intro" aria-hidden="true">
     <div class="intro__panel intro__panel--top" id="panelTop">
-      <div class="intro__wordmark" id="wordmarkWrap"><!-- SVG injected --></div>
+      <!-- The wordmark is inlined so the site runs by double-clicking the file
+           (no server needed). It is a PLACEHOLDER — same 9-path skeleton as
+           assets/wordmark/centinily.svg. To swap in the real asset, paste the
+           nine <path> elements here (keep ids p1..p9 and draw order), or delete
+           this inline <svg> entirely and it will be fetched from the file when
+           served over http. See README. -->
+      <div class="intro__wordmark" id="wordmarkWrap">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 520" fill="none"
+             class="wordmark-svg" role="img" aria-label="Centinily">
+          <path id="p1" data-letter="C" d="M470 150 C360 60 130 90 96 262 C72 402 300 470 462 380" />
+          <path id="p2" data-letter="e" d="M356 302 C378 244 470 250 458 302 C450 342 384 356 354 320 C336 296 366 252 438 288" />
+          <path id="p3" data-letter="n" d="M520 352 C518 300 522 258 548 258 C586 258 604 306 604 352 C604 320 620 262 652 262 C676 262 686 320 690 352" />
+          <path id="p4" data-letter="t" d="M690 226 C716 224 748 224 758 230 C748 234 724 234 714 230 C706 196 706 300 712 344 C716 362 742 358 756 334" />
+          <path id="p5" data-letter="i" d="M792 262 C794 300 792 330 800 348 C806 362 826 358 838 340" />
+          <path id="p6" data-letter="n" d="M876 352 C874 300 878 258 904 258 C942 258 960 306 960 352 C960 320 976 262 1008 262 C1032 262 1042 320 1046 352" />
+          <path id="p7" data-letter="i" d="M1080 262 C1082 300 1080 330 1088 348 C1094 362 1114 358 1126 340" />
+          <path id="p8" data-letter="l" d="M1160 340 C1148 296 1196 152 1210 178 C1218 194 1176 322 1186 346 C1192 362 1216 358 1232 334" />
+          <path id="p9" data-letter="y" d="M1258 258 C1260 302 1268 336 1288 342 C1304 346 1318 316 1322 270 C1322 322 1326 384 1312 418 C1352 418 1436 414 1520 412 L1720 410" />
+        </svg>
+      </div>
       <div class="glint" id="glint" aria-hidden="true"></div>
     </div>
     <div class="intro__panel intro__panel--bottom" id="panelBottom"></div>

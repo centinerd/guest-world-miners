@@ -32,13 +32,26 @@ signature move is proven; the rest is repetition of it.
 
 ## Run it
 
-Static site, no build step. Any static server:
+Static site, no build step, no dependencies. Two ways, easiest first:
+
+**1. Just open it.** Double-click `site/index.html` (or drag it into a browser).
+The wordmark is inlined, so it runs straight from `file://` — no server.
+
+**2. Serve it** (closer to production; use this once real audio/video go in):
 
 ```sh
 cd site
+node serve.js            # zero-dependency, prints a localhost URL
+# — or, if you prefer Python —
 python3 -m http.server 8123
-# open http://127.0.0.1:8123
 ```
+
+Then open the URL it prints (e.g. http://localhost:8123).
+
+**Note on the intro:** it plays once per browser session (`sessionStorage`), so
+after the first time you'll skip straight to the site. To watch it again, open a
+private window, hard-reload with the tab closed and reopened, or run this in the
+console and reload: `sessionStorage.removeItem('cent_seen')`.
 
 Timing lives in `js/intro.js` (`BEATS`) and `js/ease.js`. Tune by feel — the
 brief says most tuning is "that was better three tries ago," so it's all git.
@@ -49,13 +62,17 @@ Both are placeholders wired against the real path. No code changes to swap.
 
 ### 1. The wordmark — `assets/wordmark/centinily.svg`
 
-The current file is a **structural stand-in**, not the asset. It satisfies the
-contract the animation depends on (brief §3): 9 open skeleton paths in draw
+The current wordmark is a **structural stand-in**, not the asset. It satisfies
+the contract the animation depends on (brief §3): 9 open skeleton paths in draw
 order `C e n t i n i l y`, stroke not fill, no `Z`, the y extended off-frame.
 
-To swap: replace the nine `d=` values with the hand-authored ones. Keep the
-`id="p1"…"p9"` and draw order, keep the y exit running off the right edge
-(x > 1600). Run the brief's 20-second acceptance check on the file first.
+It lives in **two places** — an inline copy in `index.html` (so the site runs
+from `file://`) and the canonical file `assets/wordmark/centinily.svg`. The
+inline copy wins when present; delete it and the file is fetched instead (http
+only). To swap in the real asset, replace the nine `<path>` elements in
+`index.html` (and, for tidiness, the file too). Keep the `id="p1"…"p9"`, keep
+draw order, keep the y exit running off the right edge (x > 1600). Run the
+brief's 20-second acceptance check first.
 
 ### 2. The click — `assets/audio/click.wav`
 

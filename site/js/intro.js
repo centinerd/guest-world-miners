@@ -39,6 +39,15 @@ CENT.intro = (function () {
   var svg = null;
 
   function injectWordmark() {
+    // Prefer the inline SVG (so the site runs from file:// with no server).
+    // Fall back to fetching the asset file when served over http without it.
+    var existing = wrap.querySelector('svg');
+    if (existing) {
+      svg = existing;
+      paths = Array.prototype.slice.call(svg.querySelectorAll('path'));
+      primePaths();
+      return Promise.resolve();
+    }
     return fetch('assets/wordmark/centinily.svg')
       .then(function (r) { return r.text(); })
       .then(function (txt) {
