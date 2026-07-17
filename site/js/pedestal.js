@@ -10,23 +10,19 @@ window.CENT = window.CENT || {};
 CENT.pedestals = (function () {
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function arrive(piece) {
-    if (piece.__arrived) return;
-    piece.__arrived = true;
+  // Settle any [data-arrive]/[data-entrance] block in. Pedestals also rake.
+  function arrive(el) {
+    if (!el || el.__arrived) return;
+    el.__arrived = true;
 
-    var rake = piece.querySelector('.rake');
-    var streak = piece.querySelector('.rake__streak');
-
-    // The piece settles in — arrives already still, expo-out, no spring.
-    if (piece.hasAttribute('data-arrive') && !reduced) {
-      gsap.to(piece, {
-        opacity: 1, y: 0, duration: 1.1,
-        ease: CENT.ease.arrive
-      });
+    if (!reduced) {
+      gsap.to(el, { opacity: 1, y: 0, duration: 1.1, ease: CENT.ease.arrive });
     } else {
-      gsap.set(piece, { opacity: 1, y: 0 });
+      gsap.set(el, { opacity: 1, y: 0 });
     }
 
+    var rake = el.querySelector('.rake');
+    var streak = el.querySelector('.rake__streak');
     if (rake && streak && !reduced) rakeAcross(rake, streak);
     playInView();
   }
@@ -73,21 +69,45 @@ CENT.pedestals = (function () {
     document.querySelectorAll('[data-vitrine] video.loop').forEach(initVideo);
   }
 
+  // Scroll-driven arrivals: pedestal pieces and the contact block. The
+  // entrance statement is NOT observed — it's in view behind the intro, so it
+  // would arrive before the split; revealFirst() reveals it on the split.
   function watch() {
-    var pieces = document.querySelectorAll('[data-pedestal] .piece');
+    var blocks = document.querySelectorAll('[data-arrive]');
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.isIntersecting) arrive(e.target);
       });
     }, { threshold: 0.4 });
-    pieces.forEach(function (p) { io.observe(p); });
+    blocks.forEach(function (b) { io.observe(b); });
   }
 
-  /* Fire the first pedestal's rake explicitly the moment the split reveals
-     it — arrival = the vault opening, not a scroll. */
+  /* The split reveals the entrance frame (what he does) and brings up the
+     persistent corner mark. The pedestals rake on scroll. */
   function revealFirst() {
-    var first = document.querySelector('#pedestal-1 .piece');
-    if (first) arrive(first);
+    arrive(document.querySelector('[data-entrance]'));
+    showMark();
+  }
+
+  // Keep the wordmark, small, in the corner (§0 hole 3) — cloned from the
+  // signature so it's the same mark that just drew, now at rest.
+  function showMark() {
+    var mark = document.getElementById('mark');
+    if (!mark || mark.__shown) return;
+    mark.__shown = true;
+    var src = document.querySelector('#wordmarkWrap svg');
+    if (src && !mark.querySelector('svg')) {
+      var clone = src.cloneNode(true);
+      clone.removeAttribute('id');
+      clone.querySelectorAll('path').forEach(function (p) {
+        p.removeAttribute('id');
+        p.removeAttribute('style');   // drop the dash — show it fully drawn
+      });
+      mark.appendChild(clone);
+    }
+    mark.classList.add('is-shown');
+    if (reduced) { gsap.set(mark, { opacity: 1 }); }
+    else { gsap.to(mark, { opacity: 1, duration: 0.9, ease: CENT.ease.vault }); }
   }
 
   return { watch: watch, revealFirst: revealFirst };

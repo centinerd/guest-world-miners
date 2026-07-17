@@ -36,9 +36,21 @@ Everything in that sequence is here and working end to end:
   Nothing glows at rest.
 - **Reduced motion** (§2.5) — static signature (gate dropped), then cut to site.
 
+**The three §0 holes, resolved:**
+- **What he does** (hole 1) — the first frame after the split states it once:
+  *"Roblox systems, built for the people who own them."* (§0 language rule).
+- **The next step** (hole 2) — a closing frame, *"Bring the game. Or the idea."*
+  + an understated **Discord** link. Set like the papers, not a pitch.
+  **Swap the handle:** the `href` on `.contact__link` in `index.html` is a
+  `REPLACE_WITH_DISCORD_ID` placeholder.
+- **The wordmark persists** (hole 3) — a small **Centinily** signature, cloned
+  from the entrance, sits dim in the top-left corner as a home mark.
+
 **Not built yet, on purpose** (per §0 — prove the one move first): pedestals
-2–4, the terms (§7), the standard line (§8), the game-page routes (§6). The
-signature move is proven; the rest is repetition of it.
+2–4, **§7 The Papers** (the terms slab + 6 clauses), **§7.5** one quote per game
+page, **§8.5 credentials**, and the **game-page routes** (§6). The signature
+move is proven; the rest is repetition of it. Note §7's clause 6 may make the
+§8 standard line redundant — try the site without it first.
 
 ## Run it
 
