@@ -27,13 +27,19 @@ CENT.intro = (function () {
   var panelTop    = document.getElementById('panelTop');
   var panelBottom = document.getElementById('panelBottom');
 
+  // §2.2 beat table. Non-linear timing lives INSIDE each path (the eases),
+  // not in gaps between letters — the script is joined, there is nothing to
+  // stagger. The i dots are the only real pen-lifts and fire as the draw
+  // passes their x (§2.2), never batched at the end.
   var PLAN = {
-    hold: 0.20,        // beat after the click before ink appears (§2.2)
-    drawTotal: 2.5,    // seconds across all real strokes
-    strokeMin: 0.5,    // floor for a real stroke
-    accentMax: 30,     // path length (viewBox units) below which it's an accent
-    accentDur: 0.05,   // accents pop in
-    gap: 0.05          // pen lift between strokes
+    hold: 0.20,        // beat after the click before ink appears
+    durMain: 2.00,     // path 1 — the C swash through the middle
+    durExit: 1.48,     // path 3 — t/i/l/y run (~1.1s) + loop (~0.2) + exit (~0.18, 3x)
+    gap: 0.05,         // the single join between the two strokes
+    accentMax: 30,     // path length (viewBox units) below which it's an i dot
+    dotDur: 0.06,      // an i dot pops in
+    clickLead: 0.872   // §2.3: fire the file this far before the crossing so the
+                       // thk (at ~872ms into it) lands on the crossing frame
   };
 
   var paths = [];
@@ -59,46 +65,53 @@ CENT.intro = (function () {
     primePaths();
   }
 
+  var mainPath = null;   // path 1 — C swash through the middle
+  var dots = [];         // the i dots (paths 2, 4), by x
+
   // Measure each path and set it "undrawn": dasharray = length, offset = length.
   function primePaths() {
     paths.forEach(function (p) {
       var len = p.getTotalLength();
+      var start = p.getPointAtLength(0);
       var end = p.getPointAtLength(len);
       p.__len = len;
+      p.__startX = start.x;
       p.__endX = end.x;
       p.__accent = len < PLAN.accentMax;
       p.style.strokeDasharray = len;
       p.style.strokeDashoffset = len;
     });
-    // the exit stroke = the real stroke whose tail ends furthest right
-    exitPath = paths
-      .filter(function (p) { return !p.__accent; })
-      .reduce(function (a, b) { return b.__endX > a.__endX ? b : a; });
+    var strokes = paths.filter(function (p) { return !p.__accent; });
+    // exit stroke = the one whose tail ends furthest right (the y exit)
+    exitPath = strokes.reduce(function (a, b) { return b.__endX > a.__endX ? b : a; });
+    // main stroke = the other long stroke (the C swash through the middle)
+    mainPath = strokes.filter(function (p) { return p !== exitPath; })
+                      .reduce(function (a, b) { return b.__len > a.__len ? b : a; }, strokes[0]);
+    dots = paths.filter(function (p) { return p.__accent; })
+                .sort(function (a, b) { return a.__startX - b.__startX; });
   }
 
-  // Order + timing, derived from geometry.
-  function drawSteps() {
-    var strokes = paths.filter(function (p) { return !p.__accent; });
-    var accents = paths.filter(function (p) { return p.__accent; });
-    var others  = strokes.filter(function (p) { return p !== exitPath; });
-    var totalLen = strokes.reduce(function (s, p) { return s + p.__len; }, 0) || 1;
-
-    function durFor(p) {
-      return Math.max(PLAN.strokeMin, PLAN.drawTotal * p.__len / totalLen);
+  // Time within [start, start+dur] at which the pen tip drawing `path` first
+  // reaches x = targetX. Used to fire the i dots as the draw passes them (§2.2).
+  function timeAtX(path, targetX, start, dur) {
+    var L = path.__len, N = 240;
+    for (var i = 1; i <= N; i++) {
+      if (path.getPointAtLength(L * i / N).x >= targetX) return start + dur * i / N;
     }
+    return null;
+  }
 
-    var steps = [];
-    // main strokes first, in document order, glint riding each
-    others.forEach(function (p) {
-      steps.push({ path: p, dur: durFor(p), ease: CENT.ease.letter, glint: true, gap: PLAN.gap });
-    });
-    // accents: quick, no glint, before the final crossing
-    accents.forEach(function (p) {
-      steps.push({ path: p, dur: PLAN.accentDur, ease: 'none', glint: false, gap: 0.02 });
-    });
-    // the exit stroke last — hesitates through the body, then rushes off (§2.2)
-    steps.push({ path: exitPath, dur: durFor(exitPath), ease: CENT.ease.yexit, glint: true, gap: 0, isExit: true });
-    return steps;
+  // Draw one stroke: the line reveals and the glint rides the pen tip, same
+  // ease. Pen down at the start; pen up at the join, unless it's the exit
+  // stroke (the glint stays lit into the crossing).
+  function drawStroke(tl, path, start, dur, ease, isExit) {
+    tl.to(path, { strokeDashoffset: 0, duration: dur, ease: ease }, start);
+    tl.to(glint, {
+      duration: dur, ease: ease,
+      motionPath: { path: path, align: path, alignOrigin: [0.5, 0.5] }
+    }, start);
+    tl.to(glint, { opacity: 1, duration: 0.06, ease: 'none' }, start);
+    if (!isExit) tl.to(glint, { opacity: 0, duration: 0.06, ease: 'none' }, start + dur - 0.05);
   }
 
   // Place the wordmark so its ink bottom sits on the vault seam — the whole
@@ -127,32 +140,33 @@ CENT.intro = (function () {
     gsap.set(glint, { opacity: 0 });
     gsap.set(flash, { opacity: 0, scale: 0.6 });
 
-    var steps = drawSteps();
-    var t = PLAN.hold;
+    // ---- THE DRAW (§2.2). Two strokes, glint riding each; the non-linear
+    // timing lives inside the eases, not in gaps.
+    var mStart = PLAN.hold;
+    var eStart = mStart + PLAN.durMain + PLAN.gap;
 
-    steps.forEach(function (s) {
-      // the stroke draws
-      tl.to(s.path, { strokeDashoffset: 0, duration: s.dur, ease: s.ease }, t);
+    // path 1 — the C swash gets most of it (ease-in spends the time early)
+    drawStroke(tl, mainPath, mStart, PLAN.durMain, CENT.ease.letter, false);
+    // path 3 — the run hesitates through the loop, then rushes the exit off-frame
+    drawStroke(tl, exitPath, eStart, PLAN.durExit, CENT.ease.yexit, true);
 
-      if (s.glint) {
-        // the glint rides the pen tip along this exact path
-        tl.to(glint, {
-          duration: s.dur, ease: s.ease,
-          motionPath: { path: s.path, align: s.path, alignOrigin: [0.5, 0.5] }
-        }, t);
-        // pen down; and pen up at the join (kept lit into the crossing on exit)
-        tl.to(glint, { opacity: 1, duration: 0.06, ease: 'none' }, t);
-        if (!s.isExit) tl.to(glint, { opacity: 0, duration: 0.06, ease: 'none' }, t + s.dur - 0.05);
-      }
-
-      t += s.dur + s.gap;
+    // the i dots — fire as the draw passes their x (paths 2, 4 at x≈649, 810),
+    // never batched at the end (that would land them after the descender rips).
+    dots.forEach(function (d) {
+      var when = timeAtX(mainPath, d.__startX, mStart, PLAN.durMain);   // passed while writing path 1?
+      if (when === null) when = timeAtX(exitPath, d.__startX, eStart, PLAN.durExit); // else during path 3
+      if (when === null) when = eStart;
+      tl.to(d, { strokeDashoffset: 0, duration: PLAN.dotDur, ease: 'none' }, when);
     });
 
     // ---- THE CLICK (§2.3): lands on the exact frame the y-tail crosses out.
-    var crossAt = t; // == end of the exit stroke == glint at the tail tip
+    var crossAt = eStart + PLAN.durExit; // end of the exit stroke == glint at the tail tip
     tl.addLabel('cross', crossAt);
 
-    tl.call(function () { if (CENT.audio) CENT.audio.playClick(); }, null, 'cross');
+    // Fire the sound `clickLead` early so the slide builds under the writing and
+    // the thk seats on the crossing frame (§2.3). Synth waits the lead out.
+    tl.call(function () { if (CENT.audio) CENT.audio.playClick(PLAN.clickLead); },
+            null, Math.max(0, crossAt - PLAN.clickLead));
     positionFlash();
     tl.to(flash, { opacity: 1, scale: 1, duration: 0.016, ease: 'none' }, 'cross');
     tl.to(flash, { opacity: 0, scale: 1.3, duration: 0.13, ease: 'power2.out' }, 'cross+=0.016');

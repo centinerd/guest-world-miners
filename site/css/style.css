@@ -242,7 +242,7 @@ body.intro-open { overflow: hidden; height: 100vh; }
   aspect-ratio: 16 / 9;
   background:
     radial-gradient(140% 120% at 50% 30%, #14140f 0%, #0a0a0b 70%);
-  border: 1px solid rgba(194,161,91,0.10);
+  /* the content clips; the brass frame + rake sit above it, unclipped */
   overflow: hidden;
 }
 .vitrine video,
@@ -253,6 +253,16 @@ body.intro-open { overflow: hidden; height: 100vh; }
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* The brass hairline surround. A material at rest — a dim hairline, not a glow
+   (§1 law 1). The rake catches this edge (§5). */
+.vitrine__frame {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1.5px solid rgba(194,161,91,0.22);
+  z-index: 3;
 }
 /* Placeholder mark inside an empty vitrine (removed once footage exists). */
 .vitrine__placeholder {
@@ -267,26 +277,46 @@ body.intro-open { overflow: hidden; height: 100vh; }
   text-transform: lowercase;
 }
 
-/* The rake: a specular streak that travels across the piece on
-   arrival. Baked, screen-blended, transform-animated only.
-   Nothing glows at rest — it starts fully off and to the left. */
+/* The rake (§5): a specular streak travels across on arrival, but it lights
+   the FRAME, not the content — the light catches the metal surround, like a
+   vitrine spot on a bezel. The rake layer is masked to the frame ring only, so
+   the streak inside never shows over the video. Screen-blend, transform-only,
+   nothing glows at rest. */
 .rake {
   position: absolute;
-  top: -12%;
-  left: 0;
-  width: 42%;
-  height: 124%;
+  inset: 0;
   pointer-events: none;
   opacity: 0;
+  z-index: 4;
+  overflow: hidden;
   mix-blend-mode: screen;
-  will-change: transform, opacity;
+  will-change: opacity;
+  /* show only the 1.5px perimeter ring (matches the frame) */
+  padding: 1.5px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+          mask-composite: exclude;
+}
+/* the moving light — travels left→right; only its overlap with the ring shows */
+.rake__streak {
+  position: absolute;
+  top: -10%;
+  left: 0;
+  width: 45%;
+  height: 120%;
+  will-change: transform, filter;
   transform: translateX(-140%) skewX(-12deg);
   background:
     linear-gradient(105deg,
       rgba(244,230,196,0) 0%,
-      rgba(244,230,196,0.10) 38%,
-      rgba(255,252,244,0.85) 50%,
-      rgba(244,230,196,0.10) 62%,
+      rgba(244,230,196,0.12) 38%,
+      rgba(255,252,244,0.95) 50%,
+      rgba(244,230,196,0.12) 62%,
       rgba(244,230,196,0) 100%);
 }
 

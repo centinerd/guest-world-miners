@@ -14,22 +14,26 @@ Everything in that sequence is here and working end to end:
 - **The gate** (§2.1) — black, one slow-blinking hairline, *click anywhere*.
   `sessionStorage` skips it for returning visitors; deep links skip it too.
 - **The draw** (§2.2) — the real hand-authored *Centinily* signature strokes on
-  in brass hairline, non-linear. The long C-through-body stroke gets the big
-  beat; the y-tail rushes off. Timing is derived from the path geometry, so it
-  adapts to the asset (see The wordmark, below).
+  in brass hairline, with the non-linear timing living **inside** each path's
+  ease (not gaps — the script is joined). Path 1 (C swash through the middle)
+  gets ~2s; path 3 (t/i/l/y) runs, hesitates at the loop, and the y-tail rushes
+  off. The two **i-dots fire as the draw passes their x** (≈649, 810), never
+  batched at the end.
 - **The glint** (§2.2) — one hot point of light rides the pen tip. The only
   light until the click.
-- **The click** (§2.3) — a synthesized *caseback-torquing-home* thunk fires on
-  the exact frame the y-tail reaches its tip, with a one-frame white blowout at
-  that crossing point.
+- **The click** (§2.3, asset locked) — the real *magnetic slide closure*, full
+  and untrimmed, played at `t_crossing − 872ms` so the slide builds under the
+  writing and the **thk seats on the crossing frame**; a one-frame white blowout
+  fires there, and the ~1070ms tail decays as the ~1100ms split finishes.
 - **The split** (§2.4) — the black parts, a vault door, no overshoot, and the
   whole signature rides up on the top panel to reveal the first pedestal. (The
   seam sits just below the signature rather than through the y-line: this
   hand-drawn y exits mid-height with descenders below it, so splitting on the
   y-line would slice them. Faithful adaptation of the LOCKED intent; reversible.)
 - **Pedestal 1** (§6) — Mount Everest Climbing Roleplay. One piece per screen,
-  the rake sweeps as it arrives, the provenance line reads `2020–2022`. Nothing
-  glows at rest.
+  a **brass hairline frame** around the vitrine, and the rake sweeps across
+  **that frame** (not the content — §5), brightest as it crosses. `2020–2022`.
+  Nothing glows at rest.
 - **Reduced motion** (§2.5) — static signature (gate dropped), then cut to site.
 
 **Not built yet, on purpose** (per §0 — prove the one move first): pedestals
@@ -66,12 +70,12 @@ brief says most tuning is "that was better three tries ago," so it's all git.
 
 The real asset is in: the hand-authored *Centinily* signature — a continuous
 script rather than 9 per-letter skeletons. It's **4 open, stroked, curve-only
-paths** (no fill, no `Z`), which passes the §3 *material* checks (stroke not
-fill, beziers not polylines, open not closed). It does not match the §3 *shape*
-spec (9 paths / ~30–40 nodes) — it's a signature with a high node count — but it
-animates cleanly as a hairline and reads better than the per-letter approach
-would have. The draw is geometry-driven, not hardcoded to 9 letters, so it just
-works.
+paths** (no fill, no `Z`). Per the updated §3, **this is correct**: the unit is
+the pen-lift, not the letter — Centinily is joined, so the hand only lifted four
+times (two long strokes + two i-dots). The old "9 paths / ~40 nodes" rule was
+overturned; 136 clean beziers is fine, don't Simplify on principle. The draw is
+geometry-driven (main stroke, exit stroke, and i-dots found by shape), so it
+maps straight onto this structure.
 
 It lives in **two places** — an inline copy in `index.html` (so the site runs
 from `file://`) and the canonical file `assets/wordmark/centinily.svg`. The
@@ -84,15 +88,16 @@ furthest right as the y-exit crossing. If your y-exit runs cleanly off the right
 edge (the brief's §3 ideal), the crossing/blowout land at the frame edge; this
 signature's tail ends mid-frame, so they land on the tail tip instead.
 
-## The click
+## The click (§2.3, asset locked)
 
-The real click is in: `assets/audio/click.wav` — a magnetic slide *closure*.
-The source had ~460ms of slide before the snap, which would land the click half
-a second after the y crosses, so it's trimmed to the snap transient (peak ~10ms
-in), normalized for weight, and faded at the edges. `js/audio.js` fetches it and
-uses it automatically; the synth thunk is now only a fallback if the file is
-missing. To replace it, drop a new `click.wav` with its transient near the start
-(so it lands on-frame) — no code change.
+The real click is in: `assets/audio/click.wav` — a *magnetic slide closure*,
+**full and untrimmed** (only mono + normalized, per §2.3). The seat (thk) is at
+~872ms into the file; `js/intro.js` fires it at `t_crossing − 872ms` (see
+`PLAN.clickLead`) so the slide builds *under the writing* and the thk lands on
+the crossing frame, with the tail decaying as the split opens. `js/audio.js`
+fetches it and uses it automatically; the synth thunk is a fallback and delays
+itself by the same lead so it also lands on-frame. To replace it, drop a new
+`click.wav` and set `PLAN.clickLead` to its seat offset.
 
 **Heads up:** the click only plays when **served** (`node serve.js`). Opening the
 file by double-click (`file://`) can't `fetch()` the audio, so you'll get the

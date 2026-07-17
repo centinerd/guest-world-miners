@@ -14,8 +14,8 @@ CENT.pedestals = (function () {
     if (piece.__arrived) return;
     piece.__arrived = true;
 
-    var vitrine = piece.querySelector('[data-vitrine]');
     var rake = piece.querySelector('.rake');
+    var streak = piece.querySelector('.rake__streak');
 
     // The piece settles in — arrives already still, expo-out, no spring.
     if (piece.hasAttribute('data-arrive') && !reduced) {
@@ -27,20 +27,21 @@ CENT.pedestals = (function () {
       gsap.set(piece, { opacity: 1, y: 0 });
     }
 
-    if (rake && !reduced) rakeAcross(rake);
+    if (rake && streak && !reduced) rakeAcross(rake, streak);
     playInView();
   }
 
-  /* The rake: light travels edge to edge, brightest as it crosses the
-     bezel — a slow specular sweep that peaks and is gone. */
-  function rakeAcross(rake) {
-    gsap.killTweensOf(rake);
-    gsap.set(rake, { opacity: 0, xPercent: -140, filter: 'brightness(1)' });
+  /* The rake: the streak travels edge to edge; the rake layer is masked to the
+     frame ring, so only the brass surround catches the light (§5). Brightest
+     as it crosses — a specular peak that's gone. Transform + opacity only. */
+  function rakeAcross(rake, streak) {
+    gsap.killTweensOf([rake, streak]);
+    gsap.set(rake, { opacity: 0 });
+    gsap.set(streak, { xPercent: -140, filter: 'brightness(1)' });
     var tl = gsap.timeline();
     tl.to(rake, { opacity: 1, duration: 0.18, ease: 'power1.out' }, 0)
-      // travel edge to edge, brightest (the supernova) as it crosses the bezel
-      .to(rake, { xPercent: -10, filter: 'brightness(2)', duration: 0.6, ease: CENT.ease.arrive }, 0)
-      .to(rake, { xPercent: 130, filter: 'brightness(1)', duration: 0.55, ease: 'power2.in' }, 0.6)
+      .to(streak, { xPercent: -10, filter: 'brightness(2)', duration: 0.6, ease: CENT.ease.arrive }, 0)
+      .to(streak, { xPercent: 130, filter: 'brightness(1)', duration: 0.55, ease: 'power2.in' }, 0.6)
       .to(rake, { opacity: 0, duration: 0.4, ease: 'power2.in' }, 0.85);
   }
 

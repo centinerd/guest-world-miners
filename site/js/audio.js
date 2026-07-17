@@ -1,10 +1,13 @@
-/* The click (§2.3).
-   Rolex's sound is a caseback torquing home — a heavy door, a clasp closing.
-   NOT a slash. Short, dense, no ring, no metallic sustain.
+/* The click (§2.3, ASSET LOCKED).
+   A slide that seats — Magnetic_slide_closu. NOT a slash. The file is the full,
+   untrimmed recording (mono, normalized): ~850ms of slide building under the
+   writing, the thk (the seat) at ~872ms, then a ~1070ms tail that decays as the
+   1100ms split finishes opening.
 
-   This synthesises a placeholder so timing can be tuned now. Drop a real file
-   at assets/audio/click.wav and it is used automatically, no code change — the
-   frame-accurate sync in intro.js fires the same play() either way. */
+   Sync the LANDING, not the start: intro.js fires this at `t_crossing − 872ms`
+   so the thk lands on the crossing frame. playClick(lead) is passed that offset
+   so the synth fallback (which has no leading slide) can delay itself to land on
+   the same frame. */
 window.CENT = window.CENT || {};
 
 CENT.audio = (function () {
@@ -36,6 +39,8 @@ CENT.audio = (function () {
   }
 
   function playFile() {
+    // Play now: the file's own ~872ms of lead-in (the slide) puts the thk on
+    // the crossing, because intro.js already called us `lead` seconds early.
     var src = ctx.createBufferSource();
     src.buffer = buffer;
     var g = ctx.createGain();
@@ -44,8 +49,10 @@ CENT.audio = (function () {
     src.start();
   }
 
-  function playSynth() {
-    var t = ctx.currentTime;
+  function playSynth(lead) {
+    // The synth is a point event with no slide, so wait out the lead the file
+    // would have spent sliding — its hit lands on the same crossing frame.
+    var t = ctx.currentTime + (lead || 0);
     var out = ctx.createGain();
     out.gain.value = 0.9;
     out.connect(ctx.destination);
@@ -83,10 +90,12 @@ CENT.audio = (function () {
     nSrc.start(t); nSrc.stop(t + dur);
   }
 
-  function playClick() {
+  // lead = seconds by which we were called before the crossing (the file's thk
+  // offset). File ignores it (its own slide covers it); synth waits it out.
+  function playClick(lead) {
     if (!ctx) return;
     if (ctx.state === 'suspended') ctx.resume();
-    if (buffer) playFile(); else playSynth();
+    if (buffer) playFile(); else playSynth(lead);
   }
 
   return { prime: prime, playClick: playClick };
