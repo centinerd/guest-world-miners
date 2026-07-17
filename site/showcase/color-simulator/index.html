@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Color Simulator &mdash; Centinily</title>
+  <meta name="description" content="Color Simulator, built by Centinily." />
+  <link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body class="page">
+
+  <!-- A tray, not a case study (§6). Deep links never see the intro —
+       structurally: this page has no gate and no wordmark draw. -->
+  <main class="tray">
+
+    <section class="tray__stage">
+      <div class="vitrine" data-vitrine>
+        <!-- The page video is the documentation; until footage exists the
+             pedestal loop stands in. PLACEHOLDER — see capture spec (§6). -->
+        <video class="loop" muted loop playsinline preload="none"
+               data-src="../../assets/video/color-simulator-loop.mp4"
+               poster=""></video>
+        <div class="vitrine__placeholder">the system, running</div>
+        <div class="vitrine__frame" aria-hidden="true"></div>
+        <div class="rake" aria-hidden="true"><div class="rake__streak"></div></div>
+      </div>
+    </section>
+
+    <header class="tray__meta">
+      <h1 class="piece__title">Color Simulator</h1>
+      <p class="piece__line">Sole author &middot; complete codebase</p>
+      <p class="piece__num">2021&ndash;present</p>
+    </header>
+
+    <p class="tray__lines">Years of one codebase that still reads like it was written this morning. This page shows the movement.</p>
+
+    <figure class="tray__code">
+      <figcaption class="tray__codecaption">Mixer.lua &nbsp;&middot;&nbsp; shared</figcaption>
+      <pre><code><span class="c">-- Mixer.lua · shared</span>
+<span class="c">-- Every color in the game is (hue, depth): two small integers.</span>
+<span class="c">-- Not a Color3. See the note beneath this page.</span>
+
+local HUE_STEPS = 360
+local Names = require(script.Names)
+
+local Mixer = {}
+Mixer.MAX_DEPTH = 12
+
+function Mixer.mix(a, b)
+	local span = (b.hue - a.hue) % HUE_STEPS
+	if span &gt; HUE_STEPS / 2 then
+		span -= HUE_STEPS
+	end
+
+	local hue   = (a.hue + span // 2) % HUE_STEPS
+	local depth = math.min(a.depth + b.depth, Mixer.MAX_DEPTH)
+
+	return { hue = hue, depth = depth }
+end
+
+function Mixer.name(color)
+	<span class="c">-- a color a player can name is a color they can trade</span>
+	return Names.lookup(color.hue, color.depth)
+end
+
+return Mixer</code></pre>
+    </figure>
+
+    <!-- PLACEHOLDER QUOTE — replace with the owner's real words (§7.5).
+         Ask what they were worried about before hiring, and whether it
+         happened. Never ask for a testimonial. -->
+    <figure class="tray__quote">
+      <blockquote>&ldquo;Three years in, I still haven&rsquo;t needed to open the code. That&rsquo;s the review.&rdquo;</blockquote>
+      <figcaption>Owner, Color Simulator</figcaption>
+    </figure>
+
+    <!-- The one annotation on the whole site (§6): a decision made against
+         the obvious approach, and why. One. -->
+    <aside class="tray__annotation">
+      <p>The obvious mix is <code>Color3:Lerp</code>. Averaged floats drift grey by the fourth mix and never land the same value twice; integer hue steps make every result exact, repeatable, nameable &mdash; and a color a player can name is a color they can trade.</p>
+    </aside>
+
+    <nav class="tray__foot">
+      <a class="tray__room" href="../../" data-nav>The room</a>
+    </nav>
+
+  </main>
+
+  <!-- the signature, small, in the corner — the way back -->
+  <a class="mark is-shown" href="../../" aria-label="Centinily" data-nav>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1127.2 315.02" fill="none"
+         class="wordmark-svg" role="img" aria-label="Centinily">
+      <path d="M380.23,73.13c7.75-6.95,13.87-12.99,18.31-17.56,0,0,3.49-3.59,10.08-11.66,1.99-2.44,4.96-6.17,6.84-11.28.62-1.68.96-3.07,1.17-4.17.77-4.08.32-7.17.15-8.2-.22-1.27-.37-2.17-.9-3.31-.64-1.36-1.45-2.28-3.35-4.06-.65-.61-3.5-3.29-5.08-4.44-8.07-5.86-25.12-6.92-25.12-6.92-16.87-1.05-29.16-.25-29.16-.25-18.39,1.2-32.29,3.67-35.68,4.29-22.81,4.14-39.65,9.62-54.28,14.43-26.67,8.78-46.21,17.42-60.34,23.71-24.68,10.99-42.93,20.72-49.44,24.23-16.59,8.96-38.26,20.76-64.42,39.62-11.13,8.03-26.26,19.63-42.76,34.91-6.62,6.13-13.2,13.38-26.35,27.87-5.55,6.12-10.59,11.84-14.45,20.71-3.27,7.53-4.17,13.82-4.36,18.26-.15,3.47-.31,7.17,1.09,11.45,2.46,7.48,8.09,11.8,10.9,13.9,3.48,2.6,14.54,9.98,51.51,11.99,9.4.51,21.66,1.13,37.12-.34,9.86-.94,25.13-3.12,29.75-3.78,5.67-.81,9.95-1.47,11.18-1.66,3.4-.53,14.68-2.3,29.6-5.14,44.84-8.51,86.89-18.11,86.89-18.11,41.67-10.42,38.62-10.01,78.42-19.05,23.72-5.39,44.13-9.64,57.46-13.39,4.59-1.29,9.39-2.82,16.85-4.1,5.79-.99,8.35-1,13.61-2.38,2.37-.62,13.94-3.65,13.7-6.18-.18-1.88-6.86-3.28-12.44-2.55-1.99.26-4.68.9-7.51,2.48-1.53.86-8.8,4.91-9.16,11.49-.04.78-.2,3.58,1.62,5.61,1.53,1.71,3.71,2.16,7.42,2.38,6.28.38,11.19-.22,13.22-.48,6.83-.86,11.82-1.64,15.6-2.19,8.49-1.23,8.61-1.18,14.37-2.06,7.58-1.15,7.21-1.2,10.39-1.59,4.88-.59,7.2-.35,11.55-1.44,2.25-.57,4.06-1.04,6.18-2.31,1.52-.91,1.86-1.43,5.16-3.87,2.49-1.85,4.23-2.98,4.26-2.94.03.04-1.58,1.16-3.83,3.27-.08.08-.14.13-.18.17-2.55,2.4-9.56,8.98-8.61,10.39,1.01,1.5,11.39-2.72,21.04-6.65,3.96-1.61,8.48-3.55,10.94-1.57,1.19.96.99,2.1,3.1,4.9.62.83,2.15,3.09,4.07,4.07,3.66,1.87,7.72.65,10.11,0,6.21-1.69,12.76-1.77,19.04-3.18,5.02-1.12,10.09-1.98,15.15-2.9,6.24-1.14,9.35-2.08,12.05-3.22,4.42-1.86,7.36-4,12.99-8.16,1.75-1.3,3.4-2.57,9.49-7.62,7.48-6.19,11.21-9.29,14.77-12.43,1.2-1.06,8.23-7.27,13.77-12.63,0,0,3.42-3.33,7.26-6.73,3.79-3.36,3.07-2.55,6.63-5.72,5.35-4.77,10.51-9.92,20.61-20.02,4.88-4.88,4.24-4.3,8.52-8.56,3.27-3.26,5.66-5.62,5.61-5.67-.05-.05-2.01,1.76-2.92,2.61-6.31,5.87-11,11.29-11.29,11.63-6.82,7.87-22.23,22.4-41.91,43.03-14.39,15.09-24.14,26.19-43.13,47.8-17.33,19.72-31.69,36.66-31.59,36.75.09.08,18.39-21.75,44.56-50.2,15.85-17.23,35.35-37.72,39.39-42.64,1.49-1.82,2.77-3.81,5.64-6.13,1.74-1.4,3.05-2.09,2.88-2.64-.25-.81-3.44-.41-7.57-.12-3.8.27-7.61.14-11.41.36-8.82.52-32.12.25-42.26.04-2.98-.06-4.82-.12-4.82-.16,0-.05,3.53-.05,10.05,0,9.66.06,64.74.62,214.5,2.24" />
+      <path d="M649.2,161.51c-1.29.56-2.58,1.13-3.87,1.69" />
+      <path d="M633.31,177.46c-1.94,1.2-10.82,6.78-9.71,10.34.69,2.2,4.95,2.71,8.32,3.03,14.57,1.37,22.13,2.08,35.83-.3,11.82-2.05,20.68-3.58,29.6-9.41,2.06-1.34,8.58-5.8,8.57-5.81,0,0-1.49,1.03-1.75,1.22-4.87,3.43-10.78,9.88-9.79,11.3,1.35,1.94,16.83-3.68,24.87-7.18,1.5-.65,4.65-2.07,6.72-.7,2.26,1.5,1.07,4.89,3.09,7.49.48.62,1.96,1.98,11.28,2.55,5.34.33,9.39.15,10.2.11,4.93-.23,8.55-.69,14.69-1.52,19.29-2.64,22.41-3.47,25.67-6.24,2.02-1.72,5.09-5.03,4.83-5.32-.16-.18-1.54.82-1.92,1.06-4.91,3.09-9.65,9.49-8.11,11.99.19.3.36.24,3.39,1.2,1.99.63,3.04,1,3.37,1.1,9.32,2.89,32.24-2.44,32.24-2.44,6.3-1.46,10.96-2.74,17.86-4.64,8.81-2.42,13.21-3.63,16.68-4.84,10.65-3.71,16.42-7.27,27.12-15.28,9.29-6.95,7.87-4.04,29.26-16.92,26.03-15.67,49.81-33.02,49.22-33.94-.5-.77-18.33,9.87-26.16,14.68-6.41,3.94-5.43,3.61-34.54,23.46-5.74,3.91-11.13,8.32-16.87,12.23-5.24,3.57-12.37,8.23-17.08,16.62-1.45,2.58-2.2,4.68-1.4,6.39,1.62,3.46,8.66,3.27,11.78,3.19,38.91-.99,61.41-.82,66.62-10.57.64-1.2,1.94-3.64,1.47-4.01-.61-.47-4.2,2.39-6.19,6.29-1.01,1.98-2.76,5.4-1.5,6.99,2.84,3.57,19.29-4.26,21.46-5.29,6.46-3.07,10.37-5.88,11.78-4.59,1.3,1.19-.44,5.05-1.1,6.49-8.52,18.54-48.38,58.95-58.66,69.67-19.09,19.91-26.51,28.35-26.51,28.35-4.49,5.1-14.17,16.26-29.78,25.29-8.23,4.76-11.62,5.17-13.05,3.87-2.45-2.2.68-9.39,2.04-12.44,7.33-16.46,20.52-28.12,39.77-43.24.11-.09.22-.17.33-.26,7.08-5.56,12.69-9.96,17.43-13.55,6.54-4.96,11.44-8.4,16.3-11.27,14.92-8.8,27.31-13.55,43.03-19.58,16.81-6.45,30.23-10.41,35.89-12.03,34.17-9.77,61.67-12.91,81.58-15.09,11.58-1.27,27.14-2.64,45.68-3.26" />
+      <path d="M810.48,161.46c-1.29.55-2.58,1.09-3.87,1.64" />
+    </svg>
+  </a>
+
+  <div class="veil" id="veil" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="grain" id="grain" aria-hidden="true"></div>
+
+  <script src="../../js/vendor/gsap.min.js"></script>
+  <script src="../../js/vendor/CustomEase.min.js"></script>
+  <script src="../../js/vendor/MotionPathPlugin.min.js"></script>
+  <script src="../../js/ease.js"></script>
+  <script src="../../js/grain.js"></script>
+  <script src="../../js/pedestal.js"></script>
+  <script src="../../js/site.js"></script>
+</body>
+</html>

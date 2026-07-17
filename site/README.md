@@ -3,141 +3,106 @@
 A vitrine, not a portfolio. See `CENTINILY BRIEF` for every decision and the
 Rejection List. This repo is the build; the brief is the law.
 
-## What's built
+## What's built — the whole site
 
-The **first build target** (brief §0): the gate through the first pedestal.
+**Five routes** (§6: don't build a framework for this):
 
-> Draw → glint → click → split → rake → bloom.
+```
+/                              the room — intro, statement, four pedestals,
+                               the papers, the door
+/showcase/everest/             Mount Everest Climbing Roleplay
+/showcase/winter-everest/      Winter Adventure's Everest
+/showcase/speed-galaxy/        Speed Galaxy Escape
+/showcase/color-simulator/     Color Simulator — the movement; the annotation
+```
 
-Everything in that sequence is here and working end to end:
+### The home page, top to bottom
 
 - **The gate** (§2.1) — black, one slow-blinking hairline, *click anywhere*.
-  `sessionStorage` skips it for returning visitors; deep links skip it too.
-- **The draw** (§2.2) — the real hand-authored *Centinily* signature strokes on
-  in brass hairline, with the non-linear timing living **inside** each path's
-  ease (not gaps — the script is joined). Path 1 (C swash through the middle)
-  gets ~2s; path 3 (t/i/l/y) runs, hesitates at the loop, and the y-tail rushes
-  off. The two **i-dots fire as the draw passes their x** (≈649, 810), never
-  batched at the end.
-- **The glint** (§2.2) — one hot point of light rides the pen tip. The only
-  light until the click.
-- **The click** (§2.3, asset locked) — the real *magnetic slide closure*, full
-  and untrimmed, played at `t_crossing − 872ms` so the slide builds under the
-  writing and the **thk seats on the crossing frame**; a one-frame white blowout
-  fires there, and the ~1070ms tail decays as the ~1100ms split finishes.
-- **The split** (§2.4) — the black parts, a vault door, no overshoot, and the
-  whole signature rides up on the top panel to reveal the first pedestal. (The
-  seam sits just below the signature rather than through the y-line: this
-  hand-drawn y exits mid-height with descenders below it, so splitting on the
-  y-line would slice them. Faithful adaptation of the LOCKED intent; reversible.)
-- **Pedestal 1** (§6) — Mount Everest Climbing Roleplay. One piece per screen,
-  a **brass hairline frame** around the vitrine, and the rake sweeps across
-  **that frame** (not the content — §5), brightest as it crosses. `2020–2022`.
-  Nothing glows at rest.
-- **Reduced motion** (§2.5) — static signature (gate dropped), then cut to site.
+- **The draw** (§2.2) — the hand-authored signature strokes on; non-linear
+  timing lives inside each path's ease. The i-dots fire as the draw passes
+  their x. The glint rides the pen tip.
+- **The click** (§2.3, asset locked) — the full untrimmed slide, fired at
+  `t_crossing − 872ms`; the thk seats on the crossing frame, the tail decays
+  as the split opens.
+- **The split** (§2.4) — a vault door along the y's line.
+- **The statement** — *"Roblox systems, built for the people who own them."*
+- **Four pedestals**, locked order (§6): Everest `2020–2022` → Winter
+  Adventure `10,000,000 visits` → Speed Galaxy → Color Simulator. One per
+  screen, brass hairline frame, the rake catches the frame on arrival.
+  Numbers are hallmarks — small, stated once. The arc is never labeled.
+- **The slab** (§7) — *"Work first. Then the invoice. Always has been."*
+  Alone on a screen.
+- **The papers** (§7) — TERMS, six numbered clauses, verbatim from the brief.
+  A document, not a pitch.
+- **The door** — *"Bring the game. Or the idea."* + Discord.
 
-**The three §0 holes, resolved:**
-- **What he does** (hole 1) — the first frame after the split states it once:
-  *"Roblox systems, built for the people who own them."* (§0 language rule).
-- **The next step** (hole 2) — a closing frame, *"Bring the game. Or the idea."*
-  + an understated **Discord** link. Set like the papers, not a pitch.
-  **Swap the handle:** the `href` on `.contact__link` in `index.html` is a
-  `REPLACE_WITH_DISCORD_ID` placeholder.
-- **The wordmark persists** (hole 3) — a small **Centinily** signature, cloned
-  from the entrance, sits dim in the top-left corner as a home mark.
+Per the brief (§7 "Clause 6 *is* §8"), the standard line is **omitted** —
+try the site without it before adding it back.
 
-**Not built yet, on purpose** (per §0 — prove the one move first): pedestals
-2–4, **§7 The Papers** (the terms slab + 6 clauses), **§7.5** one quote per game
-page, **§8.5 credentials**, and the **game-page routes** (§6). The signature
-move is proven; the rest is repetition of it. Note §7's clause 6 may make the
-§8 standard line redundant — try the site without it first.
+### The game pages (§6 — a tray, not a case study)
+
+Each page: the piece in its vitrine (rake on arrival) → provenance →
+two lines on the system → the Lua, set like a catalogue plate → one
+inscription from that game's owner (§7.5) → *the room*. Color Simulator
+carries the site's **one annotation**. Everest carries **no quote** — that
+space stays empty on purpose.
+
+Deep links never see the intro — structurally: game pages contain no gate
+and no wordmark draw.
+
+The tray ritual is the transition: leaving, the room dims through a veil and
+the piece lifts; arriving, the stage settles first and the tray slides out
+beneath it, heavy, no overshoot.
+
+## PLACEHOLDERS — swap these
+
+All marked with `PLACEHOLDER` comments in the HTML:
+
+| What | Where |
+|---|---|
+| Discord handle | `index.html` `.contact__link` href |
+| Dates: Speed Galaxy, Color Simulator | `index.html` + those pages |
+| **All three owner quotes** (§7.5: ask what they were worried about — never ask for a testimonial) | each game page `.tray__quote` |
+| **All four Lua snippets** (invented in the right voice; swap for real modules — §6 safety: live games show architecture, never attack surface) | each game page `.tray__code` |
+| Video loops + posters (capture spec §6: Studio, no HUD, frame 0 = frame N, `-an`, H.264+WebM) | `assets/video/*-loop.mp4` |
+| `ALWAYS_INTRO` dev flag — **set `false` for launch** | `js/main.js` |
 
 ## Run it
 
-Static site, no build step, no dependencies. Two ways, easiest first:
-
-**1. Just open it.** Double-click `site/index.html` (or drag it into a browser).
-The wordmark is inlined, so it runs straight from `file://` — no server.
-
-**2. Serve it** (closer to production; use this once real audio/video go in):
+No build step, no dependencies.
 
 ```sh
 cd site
-node serve.js            # zero-dependency, prints a localhost URL
-# — or, if you prefer Python —
-python3 -m http.server 8123
+node serve.js        # http://localhost:8123 — serves the /showcase/ routes
 ```
 
-Then open the URL it prints (e.g. http://localhost:8123).
+(Double-clicking `index.html` still works for the home page; the subpages
+want the server for clean URLs.)
 
-**Note on the intro:** it plays once per browser session (`sessionStorage`), so
-after the first time you'll skip straight to the site. To watch it again, open a
-private window, hard-reload with the tab closed and reopened, or run this in the
-console and reload: `sessionStorage.removeItem('cent_seen')`.
-
-Timing lives in `js/intro.js` (`PLAN`) and `js/ease.js`. Tune by feel — the
-brief says most tuning is "that was better three tries ago," so it's all git.
-
-## The wordmark
-
-The real asset is in: the hand-authored *Centinily* signature — a continuous
-script rather than 9 per-letter skeletons. It's **4 open, stroked, curve-only
-paths** (no fill, no `Z`). Per the updated §3, **this is correct**: the unit is
-the pen-lift, not the letter — Centinily is joined, so the hand only lifted four
-times (two long strokes + two i-dots). The old "9 paths / ~40 nodes" rule was
-overturned; 136 clean beziers is fine, don't Simplify on principle. The draw is
-geometry-driven (main stroke, exit stroke, and i-dots found by shape), so it
-maps straight onto this structure.
-
-It lives in **two places** — an inline copy in `index.html` (so the site runs
-from `file://`) and the canonical file `assets/wordmark/centinily.svg`. The
-inline copy wins when present; delete it and the file is fetched (http only).
-
-To swap a *new* wordmark in later: replace the `<path>` elements in both places.
-The animation figures out the rest — it finds the tiny "accent" strokes by
-length (`PLAN.accentMax` in `js/intro.js`) and picks the stroke whose tail ends
-furthest right as the y-exit crossing. If your y-exit runs cleanly off the right
-edge (the brief's §3 ideal), the crossing/blowout land at the frame edge; this
-signature's tail ends mid-frame, so they land on the tail tip instead.
-
-## The click (§2.3, asset locked)
-
-The real click is in: `assets/audio/click.wav` — a *magnetic slide closure*,
-**full and untrimmed** (only mono + normalized, per §2.3). The seat (thk) is at
-~872ms into the file; `js/intro.js` fires it at `t_crossing − 872ms` (see
-`PLAN.clickLead`) so the slide builds *under the writing* and the thk lands on
-the crossing frame, with the tail decaying as the split opens. `js/audio.js`
-fetches it and uses it automatically; the synth thunk is a fallback and delays
-itself by the same lead so it also lands on-frame. To replace it, drop a new
-`click.wav` and set `PLAN.clickLead` to its seat offset.
-
-**Heads up:** the click only plays when **served** (`node serve.js`). Opening the
-file by double-click (`file://`) can't `fetch()` the audio, so you'll get the
-synth fallback there. Use the server to hear the real one.
-
-## Swapping the remaining placeholder assets
-
-### (Footage) — `assets/video/everest-loop.mp4` + `everest-poster.jpg`
-
-The vitrine shows a placeholder until a silent, chromeless loop is dropped in.
-Lazy-loaded, and only the in-view pedestal ever plays (§6 performance rule).
+The intro currently plays on **every** load (`ALWAYS_INTRO = true`, a dev
+convenience). Production behavior — play once per session, skip for deep
+links, static under reduced motion — is all behind that one flag.
 
 ## Layout
 
 ```
-index.html            gate + intro + pedestal 1
-css/style.css         palette, type, grain, vignette, motion (§4/§9)
-js/vendor/            GSAP core + CustomEase + MotionPathPlugin (vendored)
-js/ease.js            the two eases, everywhere (§4)
-js/grain.js           baked film-grain tile (§9)
-js/audio.js           the click — synth placeholder + real-file swap (§2.3)
-js/intro.js           draw → glint → click → split (§2)
-js/pedestal.js        arrival, the rake, video discipline (§5/§6)
-js/main.js            which entrance the visitor gets
-assets/wordmark/      the placeholder wordmark (swap this)
-assets/audio/         the click (drop click.wav here)
-assets/video/         pedestal footage (drop loop + poster here)
+index.html                 the room
+showcase/*/index.html      four trays
+css/style.css              the entire design system, one file
+js/ease.js                 the two eases (§4) — vault + arrive, nothing else
+js/grain.js                baked film-grain tile (§9)
+js/audio.js                the click — full file, thk-synced (§2.3)
+js/intro.js                draw → glint → click → split (§2)
+js/pedestal.js             arrivals, the rake, video discipline (§5/§6)
+js/site.js                 the mark, the tray ritual, the veil
+js/main.js                 which entrance the visitor gets (home only)
+serve.js                   zero-dependency static server w/ directory routes
+assets/wordmark/           the signature (4 open stroked paths — see §3)
+assets/audio/click.wav     the slide that seats (mono, untrimmed)
+assets/video/              drop loops here
 ```
 
-Stack is locked to vanilla JS + GSAP (brief §10). No framework — there are maybe
-four pieces of state on the whole site.
+Stack locked (§10): vanilla JS + GSAP. No framework, no Tailwind, no
+component library. The design system is custom properties + one stylesheet,
+which is why every screen is in the same voice.

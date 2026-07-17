@@ -86,29 +86,19 @@ CENT.pedestals = (function () {
      persistent corner mark. The pedestals rake on scroll. */
   function revealFirst() {
     arrive(document.querySelector('[data-entrance]'));
-    showMark();
+    if (CENT.site) CENT.site.showMark();
   }
 
-  // Keep the wordmark, small, in the corner (§0 hole 3) — cloned from the
-  // signature so it's the same mark that just drew, now at rest.
-  function showMark() {
-    var mark = document.getElementById('mark');
-    if (!mark || mark.__shown) return;
-    mark.__shown = true;
-    var src = document.querySelector('#wordmarkWrap svg');
-    if (src && !mark.querySelector('svg')) {
-      var clone = src.cloneNode(true);
-      clone.removeAttribute('id');
-      clone.querySelectorAll('path').forEach(function (p) {
-        p.removeAttribute('id');
-        p.removeAttribute('style');   // drop the dash — show it fully drawn
-      });
-      mark.appendChild(clone);
-    }
-    mark.classList.add('is-shown');
-    if (reduced) { gsap.set(mark, { opacity: 1 }); }
-    else { gsap.to(mark, { opacity: 1, duration: 0.9, ease: CENT.ease.vault }); }
+  /* Game pages: the tray's stage is presented by site.js; this fires its
+     rake and wakes its video once it's in place. */
+  function revealStage() {
+    var stage = document.querySelector('.tray__stage');
+    if (!stage) return;
+    var rake = stage.querySelector('.rake');
+    var streak = stage.querySelector('.rake__streak');
+    if (rake && streak && !reduced) rakeAcross(rake, streak);
+    playInView();
   }
 
-  return { watch: watch, revealFirst: revealFirst };
+  return { watch: watch, revealFirst: revealFirst, revealStage: revealStage };
 })();

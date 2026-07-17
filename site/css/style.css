@@ -233,7 +233,17 @@ body.intro-open { overflow: hidden; height: 100vh; }
   flex-direction: column;
   align-items: center;
   text-align: center;
+  /* the piece is a door to its page — but it must not look like a button */
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
+/* hover: the vitrine's metal responds a hair. A material, not a glow. */
+.piece:hover .vitrine__frame,
+.piece:focus-visible .vitrine__frame {
+  border-color: rgba(194, 161, 91, 0.4);
+}
+.piece:focus-visible { outline: none; }
 
 /* The vitrine: where the system runs. The loop is the object —
    silent, chromeless, no controls. Here a dark placeholder until
@@ -265,6 +275,7 @@ body.intro-open { overflow: hidden; height: 100vh; }
   pointer-events: none;
   border: 1.5px solid rgba(194,161,91,0.22);
   z-index: 3;
+  transition: border-color 500ms var(--ease-vault);
 }
 /* Placeholder mark inside an empty vitrine (removed once footage exists). */
 .vitrine__placeholder {
@@ -426,6 +437,9 @@ body.intro-open { overflow: hidden; height: 100vh; }
   transition: opacity 900ms var(--ease-vault);
 }
 .mark.is-shown { pointer-events: auto; }
+/* game pages: the mark is simply there — no reveal to wait for, and it must
+   survive without JS */
+body.page .mark { opacity: 1; pointer-events: auto; }
 .mark .wordmark-svg { width: 100%; height: auto; display: block; }
 .mark .wordmark-svg path {
   stroke: var(--brass);
@@ -435,6 +449,250 @@ body.intro-open { overflow: hidden; height: 100vh; }
 }
 .mark:hover .wordmark-svg path { opacity: 0.78; }
 
+/* ============================================================
+   THE PAPERS (§7)
+   Every serious watch ships with papers. A document, not a pitch —
+   and a document is allowed to be thorough.
+   ============================================================ */
+
+/* The slab. One line, alone on a screen, set like terms on heavy paper. */
+.slab {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 12vh 8vw;
+  text-align: center;
+}
+.slab__line {
+  margin: 0;
+  font-size: clamp(19px, 2.4vw, 28px);
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+/* The clauses. Numbered, small type, no adjectives anywhere. */
+.papers {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 14vh 8vw;
+}
+.papers__doc {
+  width: min(560px, 88vw);
+}
+.papers__head {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 58px;
+}
+.papers__rule {
+  flex: 1;
+  height: 1px;
+  background: rgba(194, 161, 91, 0.22);
+}
+.papers__title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.52em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  /* optically recentre the tracked text */
+  margin-right: -0.52em;
+}
+.papers__clauses {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: clause;
+}
+.papers__clauses li {
+  counter-increment: clause;
+  position: relative;
+  padding-left: 52px;
+  margin-bottom: 34px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text);
+}
+.papers__clauses li:last-child { margin-bottom: 0; }
+.papers__clauses li::before {
+  content: counter(clause);
+  position: absolute;
+  left: 0;
+  top: 0.18em;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: rgba(194, 161, 91, 0.55);
+  font-variant-numeric: tabular-nums;
+}
+.papers__clausename {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 7px;
+}
+
+/* ============================================================
+   THE GAME PAGE — a tray, not a case study (§6)
+   The piece, its provenance, two lines, the code, one inscription.
+   ============================================================ */
+body.page {
+  /* the page arrives from black; the veil lifts (CSS only, works sans JS) */
+}
+body.page .veil {
+  opacity: 1;
+  animation: veil-lift 800ms var(--ease-vault) 180ms forwards;
+}
+@keyframes veil-lift {
+  to { opacity: 0; }
+}
+
+.veil {
+  position: fixed;
+  inset: 0;
+  background: var(--black);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 55;
+}
+
+.tray {
+  position: relative;
+  z-index: 1;
+  width: min(880px, 88vw);
+  margin: 0 auto;
+  padding: 16vh 0 10vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tray__stage {
+  width: 100%;
+}
+
+.tray__meta {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+/* two lines on what the system does — never more (§1 law 4) */
+.tray__lines {
+  margin: 9vh 0 0;
+  max-width: 52ch;
+  text-align: center;
+  font-size: clamp(17px, 2vw, 21px);
+  line-height: 1.75;
+  color: var(--text);
+}
+
+/* The code is the argument (§6). Set like a plate in a catalogue:
+   captioned, quiet, legible. Monochrome — syntax coloring is decoration. */
+.tray__code {
+  margin: 11vh 0 0;
+  width: min(680px, 100%);
+}
+.tray__codecaption {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+  text-align: left;
+}
+.tray__code pre {
+  margin: 0;
+  padding: 34px 38px;
+  border: 1px solid rgba(194, 161, 91, 0.14);
+  overflow-x: auto;
+  background: rgba(255, 252, 244, 0.015);
+}
+.tray__code code {
+  font-family: "SF Mono", ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.8;
+  color: rgba(216, 210, 196, 0.88);
+  tab-size: 4;
+}
+.tray__code code .c { color: rgba(216, 210, 196, 0.38); }
+
+/* The inscription (§7.5) — one quote, from this game's owner, set like
+   the terms. Never stars, never avatars, never collected. */
+.tray__quote {
+  margin: 12vh 0 0;
+  max-width: 44ch;
+  text-align: center;
+}
+.tray__quote blockquote {
+  margin: 0;
+  font-size: clamp(17px, 2vw, 21px);
+  font-style: italic;
+  line-height: 1.75;
+  color: var(--text);
+}
+.tray__quote figcaption {
+  margin-top: 18px;
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* The one annotation on the site (§6) — a footnote in the document's voice. */
+.tray__annotation {
+  margin: 11vh 0 0;
+  width: min(560px, 100%);
+  padding-top: 26px;
+  border-top: 1px solid rgba(194, 161, 91, 0.18);
+}
+.tray__annotation p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.85;
+  color: var(--text-dim);
+}
+.tray__annotation code {
+  font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  color: rgba(216, 210, 196, 0.7);
+}
+
+/* the way back — one quiet word */
+.tray__foot {
+  margin-top: 14vh;
+}
+.tray__room {
+  font-size: 12px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--brass);
+  text-decoration: none;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(194, 161, 91, 0.28);
+  transition: color 400ms var(--ease-vault), border-color 400ms var(--ease-vault);
+}
+.tray__room:hover {
+  color: var(--brass-hot);
+  border-color: rgba(194, 161, 91, 0.6);
+}
+
+/* ---- small screens: the room shrinks, the discipline doesn't ---- */
+@media (max-width: 640px) {
+  .mark { width: 118px; top: 20px; left: 22px; }
+  .tray { padding-top: 13vh; }
+  .tray__code pre { padding: 24px 22px; }
+  .papers__clauses li { padding-left: 40px; }
+}
+
 /* ---- reduced motion (§2.5, §11): show, don't perform -------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -442,4 +700,5 @@ body.intro-open { overflow: hidden; height: 100vh; }
   .rake { display: none; }
   [data-arrive], [data-entrance] { opacity: 1; transform: none; }
   .mark { transition: none; }
+  body.page .veil { animation-duration: 1ms; }
 }

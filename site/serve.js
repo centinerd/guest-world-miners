@@ -37,25 +37,33 @@ const TYPES = {
 
 const server = http.createServer((req, res) => {
   let urlPath = decodeURIComponent(req.url.split('?')[0]);
-  if (urlPath === '/') urlPath = '/index.html';
 
   // resolve safely inside ROOT (no path traversal)
-  const filePath = path.join(ROOT, path.normalize(urlPath));
+  let filePath = path.join(ROOT, path.normalize(urlPath));
   if (!filePath.startsWith(ROOT)) {
     res.writeHead(403); res.end('Forbidden'); return;
   }
 
   fs.stat(filePath, (err, stat) => {
-    if (err || !stat.isFile()) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('404 Not Found: ' + urlPath);
-      return;
+    // directory (or "/") → its index.html, so /showcase/everest/ just works
+    if (!err && stat.isDirectory()) {
+      filePath = path.join(filePath, 'index.html');
+    } else if (err && !path.extname(filePath)) {
+      // extensionless route (/showcase/everest) → directory index
+      filePath = path.join(filePath, 'index.html');
     }
-    res.writeHead(200, {
-      'Content-Type': TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream',
-      'Cache-Control': 'no-cache'
+    fs.stat(filePath, (err2, stat2) => {
+      if (err2 || !stat2.isFile()) {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('404 Not Found: ' + urlPath);
+        return;
+      }
+      res.writeHead(200, {
+        'Content-Type': TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream',
+        'Cache-Control': 'no-cache'
+      });
+      fs.createReadStream(filePath).pipe(res);
     });
-    fs.createReadStream(filePath).pipe(res);
   });
 });
 
