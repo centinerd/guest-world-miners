@@ -14,13 +14,15 @@
   <main class="tray">
 
     <section class="tray__stage">
-      <div class="vitrine" data-vitrine>
-        <!-- The page video is the documentation; until footage exists the
-             pedestal loop stands in. PLACEHOLDER — see capture spec (§6). -->
+      <!-- shares its view-transition-name with the home thumbnail, so the
+           thumbnail morphs into this frame on navigation and the video plays. -->
+      <div class="vitrine" data-vitrine style="view-transition-name: piece-winter-everest">
+        <!-- the thumbnail (== frame 0), shown until real footage plays over it -->
+        <img class="poster" alt="" src="../../assets/posters/winter-everest.png" />
+        <!-- The page video is the documentation. PLACEHOLDER — capture spec §6. -->
         <video class="loop" muted loop playsinline preload="none"
                data-src="../../assets/video/winter-everest-loop.mp4"
-               poster=""></video>
-        <div class="vitrine__placeholder">the system, running</div>
+               poster="../../assets/posters/winter-everest.png"></video>
         <div class="vitrine__frame" aria-hidden="true"></div>
         <div class="rake" aria-hidden="true"><div class="rake__streak"></div></div>
       </div>

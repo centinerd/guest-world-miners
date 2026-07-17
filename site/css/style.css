@@ -541,12 +541,15 @@ body.page .mark { opacity: 1; pointer-events: auto; }
    THE GAME PAGE — a tray, not a case study (§6)
    The piece, its provenance, two lines, the code, one inscription.
    ============================================================ */
-body.page {
-  /* the page arrives from black; the veil lifts (CSS only, works sans JS) */
-}
-body.page .veil {
-  opacity: 1;
-  animation: veil-lift 800ms var(--ease-vault) 180ms forwards;
+/* Where there's no native morph, the page arrives from black — the veil the
+   leaving room faded into, now lifting. Where View Transitions exist, the
+   morph is the entrance and this must not run (it would flash the page black
+   mid-transition). @supports gates it exactly to the fallback browsers. */
+@supports not (view-transition-name: none) {
+  body.page .veil {
+    opacity: 1;
+    animation: veil-lift 800ms var(--ease-vault) 160ms forwards;
+  }
 }
 @keyframes veil-lift {
   to { opacity: 0; }
@@ -693,6 +696,27 @@ body.page .veil {
   .papers__clauses li { padding-left: 40px; }
 }
 
+/* ============================================================
+   THE MORPH (§6) — the thumbnail becomes the video.
+   Cross-document View Transitions: each pedestal's framed thumbnail and
+   its game page's video share a view-transition-name, so on navigation the
+   browser lifts the one rectangle into the other (and back). The tray
+   ritual, made native. Where unsupported, site.js runs the veil instead.
+   ============================================================ */
+@view-transition { navigation: auto; }
+
+/* the corner mark holds still across the morph instead of cross-fading */
+.mark { view-transition-name: mark; }
+
+/* everything that morphs moves with weight — the vault ease, no overshoot */
+::view-transition-group(*) {
+  animation-duration: 620ms;
+  animation-timing-function: cubic-bezier(0.7, 0, 0.2, 1);
+}
+/* the framed piece is one solid object; don't cross-fade its interior while
+   it travels — the poster is the same image on both sides, so hold it. */
+::view-transition-image-pair(*) { isolation: auto; }
+
 /* ---- reduced motion (§2.5, §11): show, don't perform -------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -701,4 +725,7 @@ body.page .veil {
   [data-arrive], [data-entrance] { opacity: 1; transform: none; }
   .mark { transition: none; }
   body.page .veil { animation-duration: 1ms; }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
 }

@@ -51,9 +51,23 @@ space stays empty on purpose.
 Deep links never see the intro — structurally: game pages contain no gate
 and no wordmark draw.
 
-The tray ritual is the transition: leaving, the room dims through a veil and
-the piece lifts; arriving, the stage settles first and the tray slides out
-beneath it, heavy, no overshoot.
+### The thumbnail becomes the video (the tray transition)
+
+On the home, each pedestal shows a **static thumbnail**
+(`assets/posters/<slug>.png`). Its vitrine and the game page's vitrine share a
+`view-transition-name`, so on navigation the browser **morphs the one framed
+rectangle into the other** — the thumbnail lifts and becomes the page's video,
+and back again. That's the tray ritual, made native (§6: "View Transitions API,
+or push-state + GSAP").
+
+Where cross-document View Transitions aren't supported, `js/site.js` falls back
+to the **veil**: the room dims to black and the piece lifts, then the page fades
+up from black (gated to fallback browsers with `@supports`, so it never fights
+the morph). Both paths respect reduced motion.
+
+The page video plays over the poster once footage exists; until then the poster
+(== frame 0) stands in on both sides, so the morph is seamless now and stays
+seamless when real loops drop in.
 
 ## PLACEHOLDERS — swap these
 
@@ -65,7 +79,8 @@ All marked with `PLACEHOLDER` comments in the HTML:
 | Dates: Speed Galaxy, Color Simulator | `index.html` + those pages |
 | **All three owner quotes** (§7.5: ask what they were worried about — never ask for a testimonial) | each game page `.tray__quote` |
 | **All four Lua snippets** (invented in the right voice; swap for real modules — §6 safety: live games show architecture, never attack surface) | each game page `.tray__code` |
-| Video loops + posters (capture spec §6: Studio, no HUD, frame 0 = frame N, `-an`, H.264+WebM) | `assets/video/*-loop.mp4` |
+| Thumbnails — placeholder "awaiting footage" plates; swap for real gameplay stills (frame 0 of each loop, pixel-exact per §6) | `assets/posters/*.png` |
+| Video loops (capture spec §6: Studio, no HUD, frame 0 = frame N, `-an`, H.264+WebM) | `assets/video/*-loop.mp4` |
 | `ALWAYS_INTRO` dev flag — **set `false` for launch** | `js/main.js` |
 
 ## Run it
