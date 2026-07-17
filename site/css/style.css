@@ -146,7 +146,7 @@ body.intro-open { overflow: hidden; height: 100vh; }
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: min(1100px, 84vw);
+  width: min(1240px, 88vw);
   /* vertical placement so the y-exit endpoint sits on the split
      line is set in JS via `bottom` */
 }
@@ -159,7 +159,9 @@ body.intro-open { overflow: hidden; height: 100vh; }
 .wordmark-svg path {
   fill: none;
   stroke: var(--brass);
-  stroke-width: 7;
+  /* delicate hairline for the signature (viewBox is ~1127 wide). the earlier
+     placeholder used 7; the hand-drawn script wants a thin, high-contrast line */
+  stroke-width: 3.1;
   stroke-linecap: round;
   stroke-linejoin: round;
   /* draw state (dash) is initialised in JS */
