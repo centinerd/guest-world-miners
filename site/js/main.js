@@ -1,6 +1,11 @@
 /* Orchestration. Decide which entrance the visitor gets, then hand off.
    Four pieces of state on the whole site — this is most of them. */
 (function () {
+  // DEV toggle: force the intro to play on every load, overriding the
+  // once-per-session skip from §2.1. For production set this to false — a
+  // returning visitor must never watch the intro twice (Rejection List).
+  var ALWAYS_INTRO = true;
+
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // A deep link (a client sent one piece) skips the intro entirely (§6).
@@ -23,7 +28,7 @@
 
     if (isDeepLink()) { CENT.intro.skip(); return; }
     if (reduced)      { CENT.intro.runReduced(); return; }
-    if (CENT.intro.hasSeen()) { CENT.intro.skip(); return; }  // don't play twice
+    if (!ALWAYS_INTRO && CENT.intro.hasSeen()) { CENT.intro.skip(); return; }  // don't play twice
 
     CENT.intro.run();
   });
