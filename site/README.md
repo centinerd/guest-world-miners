@@ -84,14 +84,21 @@ furthest right as the y-exit crossing. If your y-exit runs cleanly off the right
 edge (the brief's §3 ideal), the crossing/blowout land at the frame edge; this
 signature's tail ends mid-frame, so they land on the tail tip instead.
 
+## The click
+
+The real click is in: `assets/audio/click.wav` — a magnetic slide *closure*.
+The source had ~460ms of slide before the snap, which would land the click half
+a second after the y crosses, so it's trimmed to the snap transient (peak ~10ms
+in), normalized for weight, and faded at the edges. `js/audio.js` fetches it and
+uses it automatically; the synth thunk is now only a fallback if the file is
+missing. To replace it, drop a new `click.wav` with its transient near the start
+(so it lands on-frame) — no code change.
+
+**Heads up:** the click only plays when **served** (`node serve.js`). Opening the
+file by double-click (`file://`) can't `fetch()` the audio, so you'll get the
+synth fallback there. Use the server to hear the real one.
+
 ## Swapping the remaining placeholder assets
-
-### The click — `assets/audio/click.wav`
-
-`js/audio.js` synthesizes a placeholder thunk. Drop a real recording at
-`assets/audio/click.wav` and it is used automatically — the frame-accurate sync
-fires the same `playClick()` either way. Then tune the `'cross'` label offset in
-`js/intro.js` frame by frame against the y crossing.
 
 ### (Footage) — `assets/video/everest-loop.mp4` + `everest-poster.jpg`
 
