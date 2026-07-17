@@ -26,9 +26,13 @@
   document.addEventListener('DOMContentLoaded', function () {
     CENT.pedestals.watch();
 
+    // DEV: force the full animated intro on every load, past all the skips
+    // (returning visitor, deep link, reduced motion). Production wants these.
+    if (ALWAYS_INTRO) { CENT.intro.run(); return; }
+
     if (isDeepLink()) { CENT.intro.skip(); return; }
     if (reduced)      { CENT.intro.runReduced(); return; }
-    if (!ALWAYS_INTRO && CENT.intro.hasSeen()) { CENT.intro.skip(); return; }  // don't play twice
+    if (CENT.intro.hasSeen()) { CENT.intro.skip(); return; }  // don't play twice
 
     CENT.intro.run();
   });
