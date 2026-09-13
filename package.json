@@ -1,0 +1,24 @@
+{
+  "name": "lumen-rgb",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Custom RGB controller for one specific PC — built on the OpenRGB SDK. Phase 1: hardware discovery, topology probe, and the 'never default' onboard fallback.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "discover": "tsx src/tools/discover.ts",
+    "probe": "tsx src/tools/probe.ts",
+    "fallback": "tsx src/tools/fallback.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "openrgb-sdk": "^0.6.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "@types/node": "^20.14.0"
+  }
+}
